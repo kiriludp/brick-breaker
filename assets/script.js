@@ -22,9 +22,9 @@ const brickOffsetLeft = 30;
 
 
 var bricks = [];
-for (let c = 0; c < brickColumnCount; c++) {
+for (var c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
-    for (let r = 0; r < brickRowCount; r++) {
+    for (var r = 0; r < brickRowCount; r++) {
         bricks[c][r] = {x: 0, y: 0};
     }
 }
@@ -48,6 +48,15 @@ function keyUpHandler(e) {
     }
 }
 
+function collisionDetection() {
+    for (let c = 0; c <brickColumnCount; c++) {
+        for (let r=0; r < brickRowCount; r++) {
+            const b = bricks[c][r];
+            //calculations
+        }
+    }
+}
+
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI*2);
@@ -65,20 +74,18 @@ function drawPaddle(){
 }
 
 function drawBricks() {
-    const bricks = [];
-    for (let c =0; c < brickColumnCount; c++) {
-        bricks[c] = [];
-    for (let r=0; r < brickRowCount; r++) {
-        bricks[c][r]= {x: 0, y: 0};
-            const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
-            const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
-            bricks[c][r].x =0;
-            bricks[c][r].y =0;
-            ctx.beginPath();
-            ctx.rect(0, 0, brickWidth, brickHeight);
-            ctx.fillStyle = "0095DD";
-            ctx.fill();
-            ctx.closePath();
+    
+    for (var c =0; c < brickColumnCount; c++) {
+    for (var r=0; r < brickRowCount; r++) {
+        const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
+        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+        bricks[c][r].x =brickX;
+        bricks[c][r].y =brickY;
+        ctx.beginPath();
+        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+        ctx.fillStyle = "0095DD";
+        ctx.fill();
+        ctx.closePath();
         
         }
     }
@@ -105,16 +112,10 @@ function draw() {
         }
     }
 
-    if (rightPressed) {
+    if (rightPressed && paddleX < canvas.width-paddleWidth) { 
         paddleX +=7;
-        if (paddleX + paddleWidth > canvas.width){
-            paddleX = canvas.width - paddleWidth;
-        }
-    } else if (leftPressed) {
+    } else if (leftPressed && paddleX > 0) {
         paddleX -=7;
-       if (paddleX <0) {
-        paddleX = 0;
-       }
     }
 
     x += dx;
