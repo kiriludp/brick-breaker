@@ -12,20 +12,21 @@ let paddleX = (canvas.width - paddleWidth)/2;
 let rightPressed = false;
 let leftPressed = false;
 
-const brickRowCount = 3;
-const brickColumnCount = 5;
+const brickRowCount = 5;
+const brickColumnCount = 3;
 const brickWidth = 75;
 const brickHeight = 20;
 const brickPadding = 10;
 const brickOffsetTop = 30;
 const brickOffsetLeft = 30;
+let score = 0;
 
 
 var bricks = [];
 for (var c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (var r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = {x: 0, y: 0};
+        bricks[c][r] = {x: 0, y: 0, status: 1 };
     }
 }
 
@@ -49,13 +50,32 @@ function keyUpHandler(e) {
 }
 
 function collisionDetection() {
-    for (let c = 0; c <brickColumnCount; c++) {
-        for (let r=0; r < brickRowCount; r++) {
-            const b = bricks[c][r];
+    for (var c = 0; c <brickColumnCount; c++) {
+        for (var r=0; r < brickRowCount; r++) {
+            var b = bricks[c][r];
+            if (b.status === 1) {
+            
             //calculations
+            if (x > b.x && 
+                x < b.x + brickWidth && 
+                y > b.y &&
+                y < b.y + brickHeight)
+                {
+                dy = -dy;
+                b.status = 0;
+                score++;
+                if (score === brickRowCount * brickColumCount) {
+                    alert("YOU'RE A WINNER, BABY!");
+                    document.location.reload();
+                    clearInterval(interval);
+                }
+            }
+            }
         }
     }
 }
+
+
 
 function drawBall() {
     ctx.beginPath();
@@ -77,8 +97,9 @@ function drawBricks() {
     
     for (var c =0; c < brickColumnCount; c++) {
     for (var r=0; r < brickRowCount; r++) {
-        const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+        if (bricks[c][r].status === 1) {
+        var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+        const brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
         bricks[c][r].x =brickX;
         bricks[c][r].y =brickY;
         ctx.beginPath();
@@ -86,9 +107,15 @@ function drawBricks() {
         ctx.fillStyle = "0095DD";
         ctx.fill();
         ctx.closePath();
-        
+        }
         }
     }
+}
+
+function drawScore() {
+    ctx.font = "16x Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText(`Score: ${score}`, 8, 20);
 }
 
 function draw() {
@@ -96,6 +123,8 @@ function draw() {
     drawBricks();
     drawBall();
     drawPaddle();
+    drawScore();
+    collisionDetection();
     // code to make the ball bounce off the walls
    if (x + dx > canvas.width-ballRadius || x + dx < ballRadius ) {
     dx = -dx;
